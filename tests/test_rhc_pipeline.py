@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pathlib
 import sys
 
@@ -12,6 +13,7 @@ from rhc_pipeline import (
     compute_acceleration,
     compute_traversal_time,
     fuel_prediction_model,
+    plot_speed_profile,
     initialize_route_queue,
     update_horizon,
 )
@@ -105,3 +107,19 @@ def test_low_level_utilities_behave_reasonably():
 
     fc = fuel_prediction_model(10.0, accel, 0.01)
     assert fc > 0
+
+
+def test_plot_speed_profile_returns_figure_and_axes():
+    times = np.array([0.0, 1.0, 2.0])
+    speeds = np.array([10.0, 11.0, 12.5])
+
+    fig, ax = plot_speed_profile(times, speeds, label="Test trajectory")
+    assert fig is ax.figure
+    assert len(ax.lines) == 1
+    assert ax.lines[0].get_label() == "Test trajectory"
+
+    fig.canvas.draw()
+
+    import matplotlib.pyplot as plt
+
+    plt.close(fig)
