@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Rolling horizon eco-driving pipeline implemented in Python.
 
 This module mirrors the MATLAB implementation shipped with the repository
@@ -574,6 +575,58 @@ def evaluate_signal_compliance(
             penalty_count += 1
 
     return penalty_count
+
+
+def plot_speed_profile(
+    times: ArrayLike,
+    speeds: ArrayLike,
+    *,
+    ax: Optional["matplotlib.axes.Axes"] = None,
+    label: Optional[str] = "Speed profile",
+) -> Tuple["matplotlib.figure.Figure", "matplotlib.axes.Axes"]:
+    """Plot a speed trajectory over time.
+
+    Parameters
+    ----------
+    times:
+        1-D array containing the time stamps returned by the DP solver.
+    speeds:
+        1-D array containing the speed samples corresponding to ``times``.
+    ax:
+        Optional matplotlib Axes to draw on. A new figure and axes are created
+        when omitted.
+    label:
+        Optional legend label for the trajectory.
+
+    Returns
+    -------
+    figure, axes:
+        The matplotlib figure and axes objects that contain the plot.
+    """
+
+    import matplotlib.pyplot as plt
+
+    times = np.asarray(times, dtype=float).reshape(-1)
+    speeds = np.asarray(speeds, dtype=float).reshape(-1)
+
+    if times.size == 0 or speeds.size == 0:
+        raise ValueError("times and speeds must contain at least one element")
+    if times.size != speeds.size:
+        raise ValueError("times and speeds must have the same length")
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.figure
+
+    ax.plot(times, speeds, marker="o", label=label if label else None)
+    ax.set_xlabel("Time [s]")
+    ax.set_ylabel("Speed [m/s]")
+    ax.grid(True, which="both", linestyle="--", alpha=0.5)
+    if label:
+        ax.legend()
+    fig.tight_layout()
+    return fig, ax
 
 
 def fuel_prediction_model(v: float, a: float, theta: float) -> float:
