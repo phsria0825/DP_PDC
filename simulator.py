@@ -329,6 +329,10 @@ class EcoDrivingSimulator:
         step_count = 0
         control_count = 0
 
+        # Initialize RHC variables
+        rhc_cost = 0.0
+        rhc_penalty = 0
+
         while t < self.config.total_time:
             # Update traffic lights
             for light in self.traffic_lights:
